@@ -1,0 +1,1 @@
+["train_no", "train_type", "travel_class", "quota", "source_station", "destination", "season", "days_before_travel", "waitlist_number", "total_seats", "historical_confirm_rate", "cancellation_trend", "wl_seat_ratio", "booking_urgency", "confirm_signal", "cancel_pressure", "is_premium_class"]

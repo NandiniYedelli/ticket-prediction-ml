@@ -1,0 +1,34 @@
+|--- waitlist_number <= 0.01
+|   |--- class: 1
+|--- waitlist_number >  0.01
+|   |--- confirm_signal <= 0.08
+|   |   |--- days_before_travel <= -137.46
+|   |   |   |--- waitlist_number <= 0.99
+|   |   |   |   |--- source_station <= -0.96
+|   |   |   |   |   |--- class: 1
+|   |   |   |   |--- source_station >  -0.96
+|   |   |   |   |   |--- truncated branch of depth 2
+|   |   |   |--- waitlist_number >  0.99
+|   |   |   |   |--- class: 1
+|   |   |--- days_before_travel >  -137.46
+|   |   |   |--- class: 0
+|   |--- confirm_signal >  0.08
+|   |   |--- season <= -0.52
+|   |   |   |--- waitlist_number <= 0.12
+|   |   |   |   |--- class: 1
+|   |   |   |--- waitlist_number >  0.12
+|   |   |   |   |--- cancellation_trend <= 7.50
+|   |   |   |   |   |--- truncated branch of depth 2
+|   |   |   |   |--- cancellation_trend >  7.50
+|   |   |   |   |   |--- truncated branch of depth 2
+|   |   |--- season >  -0.52
+|   |   |   |--- confirm_signal <= 0.12
+|   |   |   |   |--- cancel_pressure <= 0.51
+|   |   |   |   |   |--- truncated branch of depth 2
+|   |   |   |   |--- cancel_pressure >  0.51
+|   |   |   |   |   |--- class: 1
+|   |   |   |--- confirm_signal >  0.12
+|   |   |   |   |--- historical_confirm_rate <= -0.02
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- historical_confirm_rate >  -0.02
+|   |   |   |   |   |--- class: 1
