@@ -1,0 +1,189 @@
+# 🚂 WaitSure — IRCTC Waitlist Confirmation Predictor
+
+> Predict whether your IRCTC waitlisted train ticket will get confirmed — powered by a full ML pipeline with explainability and a Streamlit UI.
+
+---
+
+## Overview
+
+WaitSure is an end-to-end machine learning project that predicts the confirmation probability of waitlisted Indian Railway (IRCTC) tickets. It combines three real-world datasets, trains and benchmarks seven ML models, and exposes predictions through both a CLI app and an interactive Streamlit web interface.
+
+---
+
+## Project Structure
+
+```
+ml-project/
+├── project.py              # Full ML pipeline: data loading, training, evaluation, visualisation
+├── predict_app.py          # CLI prediction app (dropdown-based interactive interface)
+├── streamlit_app.py        # Streamlit web UI (wraps predict_app.py backend)
+│
+├── data/
+│   ├── waitsure_200_merged.csv           # Core labelled dataset (~200 high-quality records)
+│   ├── Railway Ticket Confirmation.csv   # 30,000 IRCTC PNR records
+│   └── waiting list.csv                  # Waitlist status timeline features
+│
+├── models/
+│   ├── waitsure_best_model.pkl           # Trained Random Forest model
+│   ├── scaler.pkl                        # RobustScaler for numerical features
+│   ├── encoders.pkl                      # Label encoders for categorical columns
+│   └── feat_names.json                   # Ordered list of feature names
+│
+└── outputs/
+    ├── classification_report.txt         # Precision / recall / F1 per class
+    ├── model_report.csv                  # Benchmark table across all models
+    ├── confusion_matrix.png
+    ├── roc_curves.png
+    ├── pr_curves.png
+    ├── feature_importance.png / .csv
+    ├── model_comparison.png
+    ├── domain_insights.png
+    ├── unsupervised_analysis.png
+    └── decision_tree_rules.txt
+```
+
+---
+
+## Algorithms Used
+
+| Category | Algorithms |
+|---|---|
+| **Supervised** | Logistic Regression, Decision Tree, Random Forest, XGBoost, LightGBM, Voting Ensemble, Stacking Ensemble |
+| **Unsupervised** | K-Means Clustering, PCA |
+| **Resampling** | SMOTE (handles class imbalance) |
+| **Explainability** | SHAP (SHapley Additive exPlanations) |
+| **Evaluation** | Accuracy, F1, AUC-ROC, MAE, RMSE, R², Cross-validated AUC |
+
+---
+
+## Model Performance
+
+The best model is **Random Forest**, selected after benchmarking all seven algorithms:
+
+| Model | Accuracy | F1 Score | AUC-ROC | CV AUC |
+|---|---|---|---|---|
+| **Random Forest ★** | 99.78% | 0.9978 | 1.000 | 1.000 |
+| LightGBM | 99.80% | 0.9980 | 1.000 | 1.000 |
+| Stacking Ensemble | 99.76% | 0.9976 | 1.000 | 1.000 |
+| Voting Ensemble | 99.78% | 0.9978 | 1.000 | 1.000 |
+| XGBoost | 99.70% | 0.9970 | 0.9998 | 0.9993 |
+| Decision Tree | 99.75% | 0.9975 | 0.9992 | 0.9995 |
+| Logistic Regression | 98.31% | 0.9833 | 0.9991 | 0.9982 |
+
+---
+
+## Features Used
+
+The model is trained on 17 features:
+
+- **Ticket info:** `train_no`, `train_type`, `travel_class`, `quota`, `source_station`, `destination`
+- **Timing:** `days_before_travel`, `season`, `booking_urgency`
+- **Waitlist signals:** `waitlist_number`, `total_seats`, `wl_seat_ratio`
+- **Historical/derived:** `historical_confirm_rate`, `cancellation_trend`, `confirm_signal`, `cancel_pressure`, `is_premium_class`
+
+---
+
+## Installation
+
+**Requirements:** Python 3.9+
+
+```bash
+pip install numpy pandas scikit-learn xgboost lightgbm imbalanced-learn shap joblib matplotlib seaborn streamlit
+```
+
+---
+
+## Usage
+
+### Run the Full ML Pipeline (train + evaluate + visualise)
+
+```bash
+python project.py
+```
+
+This will load and merge all three datasets, train all seven models, evaluate them, generate all output plots and reports, and save the best model to the `models/` folder.
+
+### CLI Prediction App (interactive dropdowns)
+
+```bash
+python predict_app.py
+```
+
+Loads the pre-trained model and prompts you to select Train Number, Date, Class, Quota, etc. via dropdown menus, then prints the WaitSure prediction.
+
+### Streamlit Web UI
+
+```bash
+streamlit run streamlit_app.py
+```
+
+Opens a browser-based IRCTC-styled UI. Select ticket parameters and get an instant confirmation probability with a visual result banner.
+
+### Programmatic Prediction
+
+```python
+from predict_app import predict_ticket
+
+predict_ticket(
+    train_no=12301,
+    waitlist_number=14,
+    travel_class="3A",
+    quota="GN",
+    source_station="NDLS",
+    destination="HWH",
+    days_before_travel=10,
+    season="Non-Peak"
+)
+```
+
+---
+
+## Data Sources
+
+| File | Description | Size |
+|---|---|---|
+| `waitsure_200_merged.csv` | Core hand-labelled dataset with rich features | ~200 records |
+| `Railway Ticket Confirmation.csv` | IRCTC PNR records with confirmation status | ~30,000 records |
+| `waiting list.csv` | Waitlist status timeline for feature engineering | — |
+
+> **Note:** Update `DATA_PATHS` in `project.py` if your data files are in a different location.
+
+---
+
+## Outputs
+
+After running `project.py`, the `outputs/` folder will contain:
+
+- `classification_report.txt` — per-class precision, recall, F1
+- `model_report.csv` — full benchmark table
+- `confusion_matrix.png` — prediction error breakdown
+- `roc_curves.png` / `pr_curves.png` — model discrimination curves
+- `feature_importance.png` / `.csv` — top predictive features
+- `model_comparison.png` — side-by-side model benchmark chart
+- `domain_insights.png` — domain-specific EDA visualisations
+- `unsupervised_analysis.png` — K-Means clustering + PCA plots
+- `decision_tree_rules.txt` — human-readable decision tree logic
+
+---
+
+## Configuration
+
+Edit the top of `project.py` to configure:
+
+```python
+SEED       = 42           # Random seed for reproducibility
+OUTPUT_DIR = "outputs"    # Where plots and reports are saved
+MODEL_DIR  = "models"     # Where trained models are saved
+
+DATA_PATHS = {
+    "main":         "data/waitsure_200_merged.csv",
+    "confirmation": "data/Railway Ticket Confirmation.csv",
+    "waitlist":     "data/waiting list.csv",
+}
+```
+
+---
+
+## License
+
+This project is for educational and research purposes. IRCTC data usage should comply with the respective data provider's terms of service.
