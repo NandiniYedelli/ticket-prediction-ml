@@ -2,6 +2,8 @@
 
 > Predict whether your IRCTC waitlisted train ticket will get confirmed — powered by a full ML pipeline with explainability and a Streamlit UI.
 
+🌐 **Live Demo:** [Launch WaitSure – IRCTC Waitlist Predictor](https://ticket-prediction-ml.streamlit.app/)
+
 ---
 
 ## Overview
